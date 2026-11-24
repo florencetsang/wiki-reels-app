@@ -51,6 +51,8 @@ Running Workers pick it up within a minute. Re-run the script whenever the gener
 
 Field labels come from the generator's `vital_field`, which was added in the generator follow-up PR. For older reels
 the script falls back to category keywords, and then to the nearest field centroid.
+To label reels that are already generated without paying for generation again, run the generator with
+`--backfill-labels` first. It makes no Gemini calls and does no re-embedding.
 
 ## Deploy
 
