@@ -1,0 +1,48 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "wiki-reels-app-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "observability": { "enabled": true },
+  // The PWA (apps/web, built with `npm run build`) is served from the same origin; the Worker handles the API.
+  "assets": {
+    "directory": "../web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/v1/*", "/img/*"]
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "USER", "class_name": "UserDO" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["UserDO"] }],
+  "r2_buckets": [
+    {
+      "binding": "REELS",
+      // Same bucket as wiki-reels-generator's R2_BUCKET (reels/*); the catalog is written to catalog/*.
+      "bucket_name": "wikiinfo"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "wiki-reels-app",
+      // Replace after `npx wrangler d1 create wiki-reels-app`.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "queues": {
+    "producers": [{ "binding": "EVENTS", "queue": "wiki-reels-events" }],
+    "consumers": [{ "queue": "wiki-reels-events", "max_batch_size": 100, "max_batch_timeout": 10 }]
+  },
+  "analytics_engine_datasets": [{ "binding": "METRICS", "dataset": "wiki_reels_events" }],
+  // Optional: uncomment to answer /v1/related from the generator's Vectorize index
+  // instead of brute force over the in-memory catalog.
+  // "vectorize": [{ "binding": "VECTORIZE", "index_name": "wiki-reels" }],
+  "triggers": { "crons": ["17 3 * * *"] },
+  "vars": {
+    // Public R2 custom domain serving reels/*; leave empty to proxy images through /img.
+    "IMAGE_BASE": "",
+    "ALLOWED_ORIGINS": "*"
+  }
+  // Secret: `npx wrangler secret put TOKEN_SECRET` (local dev: TOKEN_SECRET in .dev.vars).
+}

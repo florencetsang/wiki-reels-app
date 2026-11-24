@@ -1,0 +1,29 @@
+{
+  "name": "wiki-reels-app",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @wiki-reels/web",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p scripts",
+    "test": "npm test --workspaces --if-present",
+    "sim": "npm run sim -w @wiki-reels/reco",
+    "dev:api": "npm run dev -w @wiki-reels/api",
+    "dev:web": "npm run dev -w @wiki-reels/web",
+    "seed:local": "node scripts/seed-local.ts",
+    "catalog:build": "node scripts/build-catalog.ts"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261123.1": true
+  }
+}

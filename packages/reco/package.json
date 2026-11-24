@@ -1,0 +1,22 @@
+{
+  "name": "@wiki-reels/reco",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./sim": "./src/sim.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "test": "vitest run",
+    "sim": "node src/sim-cli.ts"
+  },
+  "dependencies": {
+    "@wiki-reels/shared": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "vitest": "^5.1.1"
+  }
+}
