@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { type CatalogItemFile, type CatalogMetaFile, quantize } from "../packages/reco/src/index.ts";
@@ -151,8 +152,14 @@ export function writeCatalog(outDir: string, { meta, vecs }: BuildResult): { key
 
 /** Uploads key/file pairs to R2 with wrangler (local Miniflare storage unless remote). */
 export function upload(entries: { key: string; file: string }[], remote: boolean, bucket = BUCKET): void {
+  // Run wrangler's JS entry with this Node binary: spawning "npx" fails on Windows (it is npx.cmd).
+  const wranglerPkg = createRequire(join(API_DIR, "package.json")).resolve("wrangler/package.json");
+  const wrangler = join(dirname(wranglerPkg), "bin", "wrangler.js");
   const run = (args: string[]) =>
-    execFileSync("npx", ["wrangler", "r2", ...args, remote ? "--remote" : "--local"], { cwd: API_DIR, stdio: "inherit" });
+    execFileSync(process.execPath, [wrangler, "r2", ...args, remote ? "--remote" : "--local"], {
+      cwd: API_DIR,
+      stdio: "inherit",
+    });
   const pointer = entries.filter((e) => e.key === "catalog/current.json");
   const bulk = entries.filter((e) => e.key !== "catalog/current.json");
   if (bulk.length) {
