@@ -151,8 +151,15 @@ export function writeCatalog(outDir: string, { meta, vecs }: BuildResult): { key
 
 /** Uploads key/file pairs to R2 with wrangler (local Miniflare storage unless remote). */
 export function upload(entries: { key: string; file: string }[], remote: boolean, bucket = BUCKET): void {
+  // Windows: npx is npx.cmd, which Node only spawns via a shell (args then need manual quoting).
+  const win = process.platform === "win32";
+  const quote = (a: string) => (win && /[\s"]/.test(a) ? `"${a.replace(/"/g, '""')}"` : a);
   const run = (args: string[]) =>
-    execFileSync("npx", ["wrangler", "r2", ...args, remote ? "--remote" : "--local"], { cwd: API_DIR, stdio: "inherit" });
+    execFileSync(win ? "npx.cmd" : "npx", ["wrangler", "r2", ...args, remote ? "--remote" : "--local"].map(quote), {
+      cwd: API_DIR,
+      stdio: "inherit",
+      shell: win,
+    });
   const pointer = entries.filter((e) => e.key === "catalog/current.json");
   const bulk = entries.filter((e) => e.key !== "catalog/current.json");
   if (bulk.length) {
