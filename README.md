@@ -40,8 +40,11 @@ The generator writes `reels/<pageid>.json` and the infographics to R2. Build the
 plus int8 embeddings) from either source:
 
 ```bash
-# From the generator's local progress database
-npm run catalog:build -- --progress-db ../wiki-reels-generator/progress.sqlite --upload remote
+# From the generator's Cloudflare D1 progress database (reads D1_DATABASE_ID, CLOUDFLARE_ACCOUNT_ID or R2_ACCOUNT_ID,
+# and CLOUDFLARE_API_TOKEN from the generator's .env; they are not passed to wrangler)
+npm run catalog:build -- --d1 --env-file ../wiki-reels-generator/.env --upload remote
+# From the generator's local progress database (only exists when the generator ran without D1)
+npm run catalog:build -- --progress-db ../wiki-reels-generator/vital_progress.sqlite3 --upload remote
 # Or from a directory of downloaded reels/<pageid>.json files
 npm run catalog:build -- --reels-dir ./reels --upload remote
 ```
