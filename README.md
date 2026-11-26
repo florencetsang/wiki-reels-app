@@ -31,6 +31,7 @@ npm run dev:api                                  # Worker on http://127.0.0.1:87
 npm run dev:web                                  # PWA on http://localhost:5173 (proxies /v1 and /img to the Worker)
 ```
 
+Until the web app is built, `dev:api` serves a placeholder page at http://127.0.0.1:8787.
 To get production-like single-origin serving, run `npm run build` and then open http://127.0.0.1:8787. The Worker
 serves `apps/web/dist` as static assets.
 
